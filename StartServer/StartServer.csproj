@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+        <RootNamespace>StartUp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,11 @@
 
     <ItemGroup>
       <PackageReference Include="log4net" Version="2.0.17" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GameBase\GameBase.csproj" />
+      <ProjectReference Include="..\GameServer\GameServer.csproj" />
     </ItemGroup>
 
 </Project>

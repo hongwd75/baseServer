@@ -22,6 +22,6 @@ class Program
         Thread.CurrentThread.Name = "MAIN";        
         
         // 서버 시작을 알림
-        Console.WriteLine($"## 서버를 시작합니다. ({DateTime.Now})");
+        Console.WriteLine($"[{DateTime.Now}] ## 서버 준비 ##");
     }
 }
