@@ -2,7 +2,7 @@
 using System.Reflection;
 using Project.Common;
 using Project.Config;
-using Projecy.Database.Connection;
+using Project.Database.Connection;
 
 namespace Project.GameServer
 {

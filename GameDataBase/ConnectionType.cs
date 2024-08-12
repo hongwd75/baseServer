@@ -1,5 +1,5 @@
 ﻿
-namespace Projecy.Database.Connection
+namespace Project.Database.Connection
 {
     /// <summary>
     /// Enum what Datatstorage should be used
