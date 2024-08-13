@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
+
 
 namespace Project.Config
 {
@@ -12,11 +13,13 @@ namespace Project.Config
 		/// <summary>
 		/// The listening address of the server.
 		/// </summary>
+		[JsonProperty]
 		private IPAddress _ip;
 
 		/// <summary>
 		/// The listening port of the server.
 		/// </summary>
+		[JsonProperty]
 		private ushort _port;
 
 		/// <summary>
@@ -59,7 +62,7 @@ namespace Project.Config
 				using (StreamReader reader = fileInfo.OpenText())
 				{
 					string jsonString = reader.ReadToEnd();
-					return JsonSerializer.Deserialize<T>(jsonString);
+					return JsonConvert.DeserializeObject<T>(jsonString);
 				}
 			}
 			else
@@ -78,7 +81,7 @@ namespace Project.Config
 			if (configFile.Exists)
 				configFile.Delete();
 			
-			string jsonString = JsonSerializer.Serialize(this);
+			string jsonString = JsonConvert.SerializeObject(this);
 			File.WriteAllText(configFile.FullName, jsonString, Encoding.UTF8);
 			Console.WriteLine("JSON 저장 완료: " + jsonString);			
 		}

@@ -7,4 +7,10 @@
         <RootNamespace>DataBase</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="log4net" Version="2.0.17" />
+      <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
+      <PackageReference Include="MySqlConnector" Version="2.3.7" />
+    </ItemGroup>
+
 </Project>

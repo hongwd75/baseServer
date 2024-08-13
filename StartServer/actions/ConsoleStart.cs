@@ -3,7 +3,7 @@ using System.Reflection;
 using log4net;
 using Project.Common;
 using Project.Config;
-using Project.GameServer;
+using Project.GS;
 
 namespace Server.Startup
 {

@@ -1,10 +1,11 @@
 ﻿using System.Net;
 using System.Reflection;
+using Newtonsoft.Json;
 using Project.Common;
 using Project.Config;
 using Project.Database.Connection;
 
-namespace Project.GameServer
+namespace Project.GS
 {
     public class GameServerConfiguration : BaseServerConfiguration
     {
@@ -12,16 +13,19 @@ namespace Project.GameServer
         /// <summary>
         /// The logger name where to log the gm+ commandos
         /// </summary>
+        [JsonProperty]
         protected string m_gmActionsLoggerName;
 
         /// <summary>
         /// The logger name where to log cheat attempts
         /// </summary>
+        [JsonProperty]
         protected string m_cheatLoggerName;
 
         /// <summary>
         /// The file name of the invalid names file
         /// </summary>
+        [JsonProperty] 
         protected string m_invalidNamesFile = "";
         #endregion
         
@@ -109,6 +113,15 @@ namespace Project.GameServer
         }		
         
         /// <summary>
+        /// Gets or sets the max cout of clients allowed
+        /// </summary>
+        public int MaxClientCount
+        {
+            get { return m_maxClientCount; }
+            set { m_maxClientCount = value; }
+        }
+        
+        /// <summary>
         /// Gets or sets the trade logger name
         /// </summary>
         public string InventoryLoggerName { get; set; }
@@ -119,58 +132,69 @@ namespace Project.GameServer
         /// <summary>
         /// holds the server root directory
         /// </summary>
+        [JsonProperty]
         protected string m_rootDirectory;
 
         /// <summary>
         /// Holds the log configuration file path
         /// </summary>
+        [JsonProperty]
         protected string m_logConfigFile;
 
         /// <summary>
         /// Name of the scripts compilation target
         /// </summary>
+        [JsonProperty]
         protected string m_scriptCompilationTarget;
 
         /// <summary>
         /// The assemblies to include when compiling the scripts
         /// </summary>
+        [JsonProperty]
         protected string m_scriptAssemblies;
 		
         /// <summary>
         /// Enable/Disable Startup Script Compilation
         /// </summary>
+        [JsonProperty]
         protected bool m_enableCompilation;
 
         /// <summary>
         /// True if the server shall automatically create accounts
         /// </summary>
+        [JsonProperty]
         protected bool m_autoAccountCreation;
 
         /// <summary>
         /// The game server type
         /// </summary>
+        [JsonProperty]
         protected eGameServerType m_serverType;
 
         /// <summary>
         /// The game server name
         /// </summary>
+        [JsonProperty]
         protected string m_ServerName;
 
         /// <summary>
         /// The short server name, shown in /loc command
         /// </summary>
+        [JsonProperty]
         protected string m_ServerNameShort;
 
         /// <summary>
         /// The count of server cpu
         /// </summary>
+        [JsonProperty]
         protected int m_cpuCount = 1;
-
+        [JsonProperty]
         private int m_cpuUse = 1;
        
         /// <summary>
         /// The max client count.
         /// </summary>
+        [JsonProperty]
         protected int m_maxClientCount = 1000;
         #endregion
         
@@ -179,24 +203,33 @@ namespace Project.GameServer
         /// <summary>
         /// The path to the XML database folder
         /// </summary>
+        [JsonProperty]
         protected string m_dbConnectionString;
 
         /// <summary>
         /// Type database type
         /// </summary>
+        [JsonProperty]
         protected ConnectionType m_dbType;
 
         /// <summary>
         /// True if the server shall autosave the db
         /// </summary>
+        [JsonProperty]
         protected bool m_autoSave;
 
         /// <summary>
         /// The auto save interval in minutes
         /// </summary>
+        [JsonProperty]
         protected int m_saveInterval;
 
         #endregion      
+        
+        /// <summary>
+        /// Gets or sets the script assemblies to be included in the script compilation
+        /// </summary>        
+        public string[] AdditionalScriptAssemblies => string.IsNullOrEmpty(m_scriptAssemblies.Trim()) ? Array.Empty<string>() : m_scriptAssemblies.Split(',');
         
         /// <summary>
         /// Gets or sets the root directory of the server
