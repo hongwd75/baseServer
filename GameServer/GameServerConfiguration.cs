@@ -45,10 +45,9 @@ namespace Project.GS
 
             m_scriptCompilationTarget = Path.Combine(Path.Combine(".", "lib"), "GameServerScripts.dll");
             
-            
             m_dbType = ConnectionType.DATABASE_SQLITE;
             m_dbConnectionString = $"Data Source={Path.Combine(m_rootDirectory, "dol.sqlite3.db")}";
-            
+            m_enableCompilation = true;
             m_autoSave = true;
             m_saveInterval = 10;
             m_maxClientCount = 500;
@@ -264,6 +263,24 @@ namespace Project.GS
                 m_cpuCount = 1;	
             if (m_cpuUse < 1)
                 m_cpuUse = 1;             
+        }
+        
+        /// <summary>
+        /// Get or Set the Compilation Flag
+        /// </summary>
+        public bool EnableCompilation
+        {
+            get { return m_enableCompilation; }
+            set { m_enableCompilation = value; }
+        }
+        
+        /// <summary>
+        /// Gets or sets the script compilation target
+        /// </summary>
+        public string ScriptCompilationTarget
+        {
+            get { return m_scriptCompilationTarget; }
+            set { m_scriptCompilationTarget = value; }
         }        
     }
 }

@@ -7,6 +7,7 @@ using Project.Config;
 using Project.Database;
 using Project.DataBase;
 using Project.Database.Attributes;
+using Project.GS.Events;
 using Project.GS.serverproperty;
 using Project.Network;
 using Project.Scheduler;
@@ -331,10 +332,7 @@ namespace Project.GS
 				//Try to initialize the PlayerManager
 				if (!InitComponent(() => PlayerManager = new PlayerManager(this), "Player Manager Initialization"))
 					return false;
-
-				//Init the mail manager
-				InitComponent(MailMgr.Init(), "Mail Manager Initialization");
-
+				
 				//---------------------------------------------------------------
 				//Enable Worldsave timer now
 				if (m_timer != null)
@@ -345,63 +343,7 @@ namespace Project.GS
 				m_timer = new Timer(SaveTimerProc, null, SaveInterval*MINUTE_CONV, Timeout.Infinite);
 				if (log.IsInfoEnabled)
 					log.Info("World save timer: true");
-
-				//---------------------------------------------------------------
-				//Load all boats
-				if (!InitComponent(BoatMgr.LoadAllBoats(), "Boat Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load all guilds
-				if (!InitComponent(GuildMgr.LoadAllGuilds(), "Guild Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load the keep manager
-				if (!InitComponent(StartKeepManager(), "Keep Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load the door manager
-				if (!InitComponent(DoorMgr.Init(), "Door Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Try to initialize the WorldMgr
-				if (!InitComponent(WorldMgr.Init(regionsData), "World Manager Initialization"))
-					return false;
-				regionsData = null;
-
-				//---------------------------------------------------------------
-				//Load the relic manager
-				if (!InitComponent(RelicMgr.Init(), "Relic Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load all crafting managers
-				if (!InitComponent(CraftingMgr.Init(), "Crafting Managers"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load player titles manager
-				if (!InitComponent(PlayerTitleMgr.Init(), "Player Titles Manager"))
-					return false;
-
-				//---------------------------------------------------------------
-				//Load behaviour manager
-				if (!InitComponent(BehaviourMgr.Init(), "Behaviour Manager"))
-					return false;
-
-				//Load the quest managers if enabled
-				if (Properties.LOAD_QUESTS)
-				{
-					if (!InitComponent(QuestMgr.Init(), "Quest Manager"))
-						return false;
-				}
-				else
-				{
-					log.InfoFormat("Not Loading Quest Manager : Obeying Server Property <load_quests> - {0}", Properties.LOAD_QUESTS);
-				}
+				
 
 				//---------------------------------------------------------------
 				//Notify our scripts that everything went fine!
@@ -425,14 +367,7 @@ namespace Project.GS
 				//---------------------------------------------------------------
 				//Open the server, players can now connect if webhook, inform Discord!
 				m_status = eGameServerStatus.GSS_Open;
-
-				if (Properties.DISCORD_ACTIVE && (!string.IsNullOrEmpty(Properties.DISCORD_WEBHOOK_ID)))
-				{
-
-					var hook = new DolWebHook(Properties.DISCORD_WEBHOOK_ID);					
-					hook.SendMessage("Server open for connections");
-				}
-								
+				
 				if (log.IsInfoEnabled)
 					log.Info($"GameServer {Version} is now open for connections!");
 
