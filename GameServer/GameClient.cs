@@ -43,6 +43,29 @@ public class GameClient : BaseClient, ICustomParamsValuable
     protected Account m_account;
     
     /// <summary>
+    /// Gets or sets the client state
+    /// </summary>
+    public eClientState ClientState
+    {
+        get { return m_clientState; }
+        set
+        {
+            eClientState oldState = m_clientState;
+
+            // refresh ping timeouts immediately when we change into playing state or charscreen
+            if ((oldState != eClientState.Playing && value == eClientState.Playing) ||
+                (oldState != eClientState.CharScreen && value == eClientState.CharScreen))
+            {
+                PingTime = DateTime.Now.Ticks;
+            }
+
+            m_clientState = value;
+            GameEventMgr.Notify(GameClientEvent.StateChanged, this);
+            //DOLConsole.WriteSystem("New State="+value.ToString());
+        }
+    }
+    
+    /// <summary>
     /// Variable is false if account/player is Ban, for a wrong password, if server is closed etc ... 
     /// </summary>
     public bool IsConnected = true;

@@ -57,6 +57,12 @@ public class Properties
     /// </summary>
     [ServerProperty("system", "enable_audit_log", "Whether or not to enable the audit log", false)]
     public static bool ENABLE_AUDIT_LOG;    
+    
+    /// <summary>
+    /// Anon Modifier
+    /// </summary>
+    [ServerProperty("server", "anon_modifier", "Various modifying options for anon, 0 = default, 1 = /who shows player but as ANON, -1 = disabled", 0)]
+    public static int ANON_MODIFIER;    
     #endregion
     
     

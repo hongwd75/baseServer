@@ -7,7 +7,9 @@ using Project.Config;
 using Project.Database;
 using Project.DataBase;
 using Project.Database.Attributes;
+using Project.GS.DatabaseUpdate;
 using Project.GS.Events;
+using Project.GS.PacketHandler;
 using Project.GS.ServerProperties;
 using Project.Network;
 using Project.Scheduler;
@@ -747,8 +749,6 @@ namespace Project.GS
 		{
 			var client = new GameClient(this);
 			GameEventMgr.Notify(GameClientEvent.Created, client);
-			client.UdpConfirm = false;
-
 			return client;
 		}
 

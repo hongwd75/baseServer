@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="database\updaters" />
       <Folder Include="packets\Client" />
     </ItemGroup>
 

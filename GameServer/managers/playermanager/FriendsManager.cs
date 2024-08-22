@@ -151,7 +151,7 @@ namespace Project.GS.Friends;
 
 			if (success)
 			{
-				Player.Out.SendAddFriends(new[] { Friend });
+				//Player.Out.SendAddFriends(new[] { Friend }); Todo. 패킷 전송은 다음에 
 				Player.SerializedFriendsList = this[Player];
 
 				var offlineFriend = Database.SelectObjects<DOLCharacters>(DB.Column(nameof(DOLCharacters.Name)).IsEqualTo(Friend)).FirstOrDefault();
@@ -207,7 +207,7 @@ namespace Project.GS.Friends;
 
 			if (success)
 			{
-				Player.Out.SendRemoveFriends(new[] { Friend });
+				// Player.Out.SendRemoveFriends(new[] { Friend }); Todo. 패킷전송은 나중에
 				Player.SerializedFriendsList = this[Player];
 
 				if (!PlayersFriendsStatusCache.TryUpdate(Player, list => list.Where(frd => frd.Name != Friend).ToArray()))
@@ -229,7 +229,7 @@ namespace Project.GS.Friends;
 			if (Player == null)
 				throw new ArgumentNullException("Player");
 
-			Player.Out.SendCustomTextWindow("Friends (snapshot)", this[Player]);
+			//Player.Out.SendCustomTextWindow("Friends (snapshot)", this[Player]); Todo. 패킷전송은 나중에
 		}
 
 		/// <summary>
@@ -242,7 +242,7 @@ namespace Project.GS.Friends;
 				throw new ArgumentNullException("Player");
 
 			// "TF" - clear friend list in social
-			Player.Out.SendMessage("TF", eChatType.CT_SocialInterface, eChatLoc.CL_SystemWindow);
+			//Player.Out.SendMessage("TF", eChatType.CT_SocialInterface, eChatLoc.CL_SystemWindow); Todo. 패킷전송은 나중에
 
 			var offlineFriends = this[Player].ToList();
 			var index = 0;
@@ -250,6 +250,7 @@ namespace Project.GS.Friends;
 					 .Where(kv => kv.Key != null && !kv.Key.IsAnonymous).Select(kv => kv.Key))
 			{
 				offlineFriends.Remove(friend.Name);
+				/*
 				Player.Out.SendMessage(string.Format("F,{0},{1},{2},{3},\"{4}\"",
 					index++,
 					friend.Name,
@@ -257,6 +258,8 @@ namespace Project.GS.Friends;
 					friend.CharacterClass.ID,
 					friend.CurrentZone == null ? string.Empty : friend.CurrentZone.Description),
 					eChatType.CT_SocialInterface, eChatLoc.CL_SystemWindow);
+					Todo. 패킷전송은 나중에
+				*/
 			}
 
 			// Query Offline Characters
@@ -266,6 +269,7 @@ namespace Project.GS.Friends;
 			{
 				foreach (var friend in offline.Where(frd => offlineFriends.Contains(frd.Name)))
 				{
+					/*
 					Player.Out.SendMessage(string.Format("F,{0},{1},{2},{3},\"{4}\"",
 						index++,
 						friend.Name,
@@ -273,6 +277,8 @@ namespace Project.GS.Friends;
 						friend.ClassID,
 						friend.LastPlayed),
 						eChatType.CT_SocialInterface, eChatLoc.CL_SystemWindow);
+						Todo. 패킷전송은 나중에
+					*/
 				}
 			}
 
@@ -284,10 +290,13 @@ namespace Project.GS.Friends;
 		/// <param name="Player">GamePlayer to send the list to.</param>
 		private void SendPlayerFriendsList(GamePlayer Player)
 		{
+			/*
 			Player.Out.SendAddFriends(this[Player].Where(name => {
 				var player = PlayersFriendsListsCache.FirstOrDefault(kv => kv.Key != null && kv.Key.Name == name);
 				return player.Key != null && !player.Key.IsAnonymous;
 			}).ToArray());
+			Todo. 패킷전송은 나중에
+			*/
 		}
 
 		/// <summary>
@@ -301,7 +310,7 @@ namespace Project.GS.Friends;
 
 			foreach (GamePlayer friend in PlayersFriendsListsCache.Where(kv => kv.Value.Contains(playerName)).Select(kv => kv.Key))
 			{
-				friend.Out.SendAddFriends(playerUpdate);
+				//friend.Out.SendAddFriends(playerUpdate); Todo. 패킷전송은 나중에
 			}
 		}
 
@@ -316,10 +325,10 @@ namespace Project.GS.Friends;
 
 			foreach (GamePlayer friend in PlayersFriendsListsCache.Where(kv => kv.Value.Contains(playerName)).Select(kv => kv.Key))
 			{
-				friend.Out.SendRemoveFriends(playerUpdate);
+				//friend.Out.SendRemoveFriends(playerUpdate); Todo. 패킷전송은 나중에
 			}
 
-			var offline = new FriendStatus(Player.Name, Player.Level, Player.CharacterClass.ID, DateTime.Now);
+			var offline = new FriendStatus(Player.Name, Player.Level, 0 /* Player.CharacterClass.ID Todo. 패킷전송 */ , DateTime.Now);
 
 			PlayersFriendsStatusCache.FreezeWhile(dict => {
 				foreach (var list in dict.Where(kv => kv.Value.Any(frd => frd.Name == Player.Name)).ToArray())

@@ -1,4 +1,5 @@
 ﻿using Project.DataBase;
+using Project.GS.Events;
 using Project.GS.PacketHandler;
 
 namespace Project.GS;
@@ -79,6 +80,34 @@ public class GamePlayer : GameLiving
     {
         get { return m_enteredGame; }
         set { m_enteredGame = value; }
+    }
+    
+    /// <summary>
+    /// Gets or sets the anonymous flag for this player
+    /// (delegate to property in PlayerCharacter)
+    /// </summary>
+    public bool IsAnonymous
+    {
+        get { return DBCharacter != null ? DBCharacter.IsAnonymous && (ServerProperties.Properties.ANON_MODIFIER != -1) : false; }
+        set
+        {
+            var old = IsAnonymous;
+            if (DBCharacter != null)
+                DBCharacter.IsAnonymous = value;
+				
+            if (old != IsAnonymous)
+                GameEventMgr.Notify(GamePlayerEvent.ChangeAnonymous, this);
+        }
+    }
+    
+    /// <summary>
+    /// Gets or sets the SerializedFriendsList for this player
+    /// (delegate to property in DBCharacter)
+    /// </summary>
+    public string[] SerializedFriendsList
+    {
+        get { return DBCharacter != null ? DBCharacter.SerializedFriendsList.Split(',').Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name)).ToArray() : Array.Empty<string>(); }
+        set { if (DBCharacter != null) DBCharacter.SerializedFriendsList = string.Join(",", value.Select(name => name.Trim()).Where(name => !string.IsNullOrEmpty(name))); }
     }
     
     /// <summary>

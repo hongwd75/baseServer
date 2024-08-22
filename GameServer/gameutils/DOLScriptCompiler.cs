@@ -11,7 +11,7 @@ namespace Project.GS;
 
 public class DOLScriptCompiler
 {
-    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
     private Compilation compiler;
     private Microsoft.CodeAnalysis.Emit.EmitResult lastEmitResult;
