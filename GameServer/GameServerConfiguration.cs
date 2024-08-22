@@ -29,6 +29,7 @@ namespace Project.GS
         protected string m_invalidNamesFile = "";
         #endregion
         
+        
         // 필요한 내용을 채워넣으세요.
         public GameServerConfiguration() : base()
         {
@@ -281,6 +282,21 @@ namespace Project.GS
         {
             get { return m_scriptCompilationTarget; }
             set { m_scriptCompilationTarget = value; }
+        }        
+
+        /// <summary>
+        /// Gets or sets the invalid name filename
+        /// </summary>
+        public string InvalidNamesFile
+        {
+            get
+            {
+                if(Path.IsPathRooted(m_invalidNamesFile))
+                    return m_invalidNamesFile;
+                else
+                    return Path.Combine(m_rootDirectory, m_invalidNamesFile);
+            }
+            set { m_invalidNamesFile = value; }
         }        
     }
 }

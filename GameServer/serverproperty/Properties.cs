@@ -2,9 +2,9 @@
 using System.Reflection;
 using log4net;
 using Project.DataBase.Tables;
-using Project.serverproperty;
+using Project.ServerProperties;
 
-namespace Project.GS.serverproperty;
+namespace Project.GS.ServerProperties;
 
 public class Properties
 {
@@ -52,6 +52,11 @@ public class Properties
     [ServerProperty("system", "max_players", "Max Players - Edit this to set the maximum players allowed to connect at the same time set 0 for unlimited", 0)]
     public static int MAX_PLAYERS;    
 
+    /// <summary>
+    /// Whether or not to enable the audit log
+    /// </summary>
+    [ServerProperty("system", "enable_audit_log", "Whether or not to enable the audit log", false)]
+    public static bool ENABLE_AUDIT_LOG;    
     #endregion
     
     

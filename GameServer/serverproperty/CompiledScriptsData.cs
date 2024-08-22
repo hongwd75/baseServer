@@ -1,6 +1,6 @@
 ﻿using SQLitePCL;
 
-namespace Project.GS.serverproperty;
+namespace Project.GS.ServerProperties;
 
 public sealed class CompiledScriptsData
 {

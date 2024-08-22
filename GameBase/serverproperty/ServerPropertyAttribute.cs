@@ -2,7 +2,7 @@
  *  서버 설정갑을 설명과 함께 코드에 적용하기 위한 속성 클래스
  * 
  */
-namespace Project.serverproperty;
+namespace Project.ServerProperties;
 /// <summary>
 /// The server property attribute
 /// </summary>

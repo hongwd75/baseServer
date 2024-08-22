@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using log4net;
 using Newtonsoft.Json;
-using Project.GS.serverproperty;
+using Project.GS.ServerProperties;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Project.GS;

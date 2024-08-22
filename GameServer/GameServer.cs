@@ -8,7 +8,7 @@ using Project.Database;
 using Project.DataBase;
 using Project.Database.Attributes;
 using Project.GS.Events;
-using Project.GS.serverproperty;
+using Project.GS.ServerProperties;
 using Project.Network;
 using Project.Scheduler;
 
@@ -77,6 +77,7 @@ namespace Project.GS
 		public IObjectDatabase IDatabase => m_database;
 		public eGameServerStatus ServerStatus => m_status;
 		public SimpleScheduler Scheduler { get; protected set; }
+		public PlayerManager PlayerManager { get; protected set; }
 		public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 		protected virtual IObjectDatabase DataBaseImpl => Instance.m_database;
