@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.FlatBuffers" Version="24.3.25" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0-3.final" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>

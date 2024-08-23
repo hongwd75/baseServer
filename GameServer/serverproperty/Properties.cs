@@ -49,7 +49,7 @@ public class Properties
     /// <summary>
     /// The max number of players on the server
     /// </summary>
-    [ServerProperty("system", "max_players", "Max Players - Edit this to set the maximum players allowed to connect at the same time set 0 for unlimited", 0)]
+    [ServerProperty("system", "max_players", "Max Players - Edit this to set the maximum players allowed to connect at the same time set 0 for unlimited", 1000)]
     public static int MAX_PLAYERS;    
 
     /// <summary>

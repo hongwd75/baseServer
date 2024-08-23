@@ -7,10 +7,9 @@ using Project.Network;
 
 namespace Project.GS;
 
-public class GameClient : BaseClient, ICustomParamsValuable
+public partial class GameClient : BaseClient, ICustomParamsValuable
 {
     #region eClientState enum
-
     /// <summary>
     /// Current state of the client
     /// </summary>
@@ -24,14 +23,34 @@ public class GameClient : BaseClient, ICustomParamsValuable
         Linkdead = 0x05,
         Disconnected = 0x06,
     } ;
-
     #endregion
     
+    #region eClientType enum
     /// <summary>
-    /// Custom Account Params
+    /// The client software type enum
     /// </summary>
-    protected Dictionary<string, List<string>> m_customParams = new Dictionary<string, List<string>>();
+    public enum eClientType
+    {
+        Unknown = -1,
+        AOS = 1,
+        IOS = 2,
+        Windows = 3,
+    }
+    #endregion
     
+    #region eClientVersion enum
+    /// <summary>
+    /// the version enum
+    /// </summary>
+    public enum eClientVersion
+    {
+        VersionNotChecked = -1,
+        VersionUnknown = 0,
+        Version100 = 100
+    }
+    #endregion
+
+    #region Variables
     /// <summary>
     /// Defines a logger for this class.
     /// </summary>
@@ -41,6 +60,75 @@ public class GameClient : BaseClient, ICustomParamsValuable
     /// This variable holds the accountdata
     /// </summary>
     protected Account m_account;
+    
+    /// <summary>
+    /// This variable holds the active charindex
+    /// </summary>
+    protected int m_activeCharIndex;
+    
+    /// <summary>
+    /// Variable is false if account/player is Ban, for a wrong password, if server is closed etc ... 
+    /// </summary>
+    public bool IsConnected = true;
+
+    /// <summary>
+    /// Holds the current clientstate
+    /// </summary>
+    protected volatile eClientState m_clientState = eClientState.NotConnected;
+    
+    /// <summary>
+    /// Holds client software type
+    /// </summary>
+    protected eClientType m_clientType = eClientType.Unknown;
+    protected eClientVersion m_clientVersion;
+    
+    /// <summary>
+    /// The packetsender of this client
+    /// </summary>
+    protected IPacketLib m_packetLib;
+
+    /// <summary>
+    /// The packetreceiver of this client
+    /// </summary>
+    protected PacketProcessor m_packetProcessor;
+
+    /// <summary>
+    /// Holds the time of the last ping
+    /// </summary>
+    protected long m_pingTime = DateTime.Now.Ticks; // give ping time on creation
+    
+    /// <summary>
+    /// This variable holds all info about the active player
+    /// </summary>
+    protected GamePlayer m_player;    
+    /// <summary>
+    /// This variable holds the sessionid
+    /// </summary>
+    protected int m_sessionID;
+
+    /// <summary>
+    /// Custom Account Params  사용 용도를 확인해야함
+    /// </summary>
+    protected Dictionary<string, List<string>> m_customParams = new Dictionary<string, List<string>>();
+
+    /// <summary>
+    /// Holds the Player Collection of Updated Object with last update time.
+    /// </summary>
+    protected ReaderWriterDictionary<Tuple<ushort, ushort>, long> m_GameObjectUpdateArray;
+    #endregion
+
+    #region Properties
+    /// <summary>
+    /// Gets whether or not the client is playing
+    /// </summary>
+    public bool IsPlaying
+    {
+        get
+        {
+            //Linkdead players also count as playing :)
+            return m_clientState == eClientState.Playing || m_clientState == eClientState.Linkdead;
+        }
+    }
     
     /// <summary>
     /// Gets or sets the client state
@@ -66,50 +154,22 @@ public class GameClient : BaseClient, ICustomParamsValuable
     }
     
     /// <summary>
-    /// Variable is false if account/player is Ban, for a wrong password, if server is closed etc ... 
+    /// the version of this client
     /// </summary>
-    public bool IsConnected = true;
-
-    /// <summary>
-    /// Gets whether or not the client is playing
-    /// </summary>
-    public bool IsPlaying
+    public eClientVersion Version
     {
-        get
-        {
-            //Linkdead players also count as playing :)
-            return m_clientState == eClientState.Playing || m_clientState == eClientState.Linkdead;
-        }
+        get { return m_clientVersion; }
+        set { m_clientVersion = value; }
     }
-    
-    /// <summary>
-    /// Holds the current clientstate
-    /// </summary>
-    protected volatile eClientState m_clientState = eClientState.NotConnected;
-    
-    /// <summary>
-    /// The packetsender of this client
-    /// </summary>
-    protected IPacketLib m_packetLib;
 
     /// <summary>
-    /// The packetreceiver of this client
+    /// Gets/sets client software type (classic/SI/ToA/Catacombs)
     /// </summary>
-    protected PacketProcessor m_packetProcessor;
-
-    /// <summary>
-    /// Holds the time of the last ping
-    /// </summary>
-    protected long m_pingTime = DateTime.Now.Ticks; // give ping time on creation
-    
-    /// <summary>
-    /// This variable holds all info about the active player
-    /// </summary>
-    protected GamePlayer m_player;    
-    /// <summary>
-    /// This variable holds the sessionid
-    /// </summary>
-    protected int m_sessionID;
+    public eClientType ClientType
+    {
+        get { return m_clientType; }
+        set { m_clientType = value; }
+    }
     
     /// <summary>
     /// Gets/Sets the time of last ping packet
@@ -185,12 +245,24 @@ public class GameClient : BaseClient, ICustomParamsValuable
     }
 
     /// <summary>
+    /// Get the Game Object Update Array (Read/Write)
+    /// </summary>
+    public ReaderWriterDictionary<Tuple<ushort, ushort>, long> GameObjectUpdateArray
+    {
+        get { return m_GameObjectUpdateArray; }
+    }
+    #endregion
+    
+    /// <summary>
     /// Constructor for a game client
     /// </summary>
     /// <param name="srvr">The server that's communicating with this client</param>
     public GameClient(BaseServer srvr)
         : base(srvr)
     {
+        m_clientVersion = eClientVersion.VersionNotChecked;
         m_player = null;
+        m_activeCharIndex = -1; //No character loaded yet!
+        m_GameObjectUpdateArray = new ReaderWriterDictionary<Tuple<ushort, ushort>, long>();
     }    
 }

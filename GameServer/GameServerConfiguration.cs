@@ -116,10 +116,7 @@ namespace Project.GS
 			base.SaveToConfig(root);
 			root["Server"]["ServerName"].Set(m_ServerName);
 			root["Server"]["ServerNameShort"].Set(m_ServerNameShort);
-			// Removed to not confuse users
-//			root["Server"]["RootDirectory"].Set(m_rootDirectory);
 			root["Server"]["LogConfigFile"].Set(m_logConfigFile);
-
 			root["Server"]["ScriptCompilationTarget"].Set(m_scriptCompilationTarget);
 			root["Server"]["ScriptAssemblies"].Set(m_scriptAssemblies);
 			root["Server"]["EnableCompilation"].Set(m_enableCompilation);
@@ -196,7 +193,7 @@ namespace Project.GS
             m_scriptCompilationTarget = Path.Combine(Path.Combine(".", "lib"), "GameServerScripts.dll");
             
             m_dbType = ConnectionType.DATABASE_SQLITE;
-            m_dbConnectionString = $"Data Source={Path.Combine(m_rootDirectory, "dol.sqlite3.db")}";
+            m_dbConnectionString = $"Data Source={Path.Combine(m_rootDirectory, "server.sqlite3.db")}";
             m_enableCompilation = true;
             m_autoSave = true;
             m_saveInterval = 10;
