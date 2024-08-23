@@ -63,16 +63,21 @@ namespace Server.Startup
 				configFile = new FileInfo(currentAssembly.DirectoryName + Path.DirectorySeparatorChar + "config" + Path.DirectorySeparatorChar + "serverconfig.xml");
 			}
 			if (parameters.ContainsKey("-crashonfail")) crashOnFail = true;
-			var config = BaseServerConfiguration.GetConfigData<GameServerConfiguration>(configFile);
-			if (config == null)
+			var config = new GameServerConfiguration();
+			if (configFile.Exists)
+			{
+				config.LoadFromXMLFile(configFile);
+			}
+			else
 			{
 				if (!configFile.Directory.Exists)
 					configFile.Directory.Create();
-				config.SaveJSON(configFile);
-				
-				Console.WriteLine("[경고] Game Server 설정 파일이 존재하지 않아서 기본 값으로 설정하고 저장함.");
-			}
-			
+				config.SaveToXMLFile(configFile);
+				//if (File.Exists(currentAssembly.DirectoryName + Path.DirectorySeparatorChar + "DOLConfig.exe"))
+				{
+					Console.WriteLine("[경고] Game Server 설정 파일이 존재하지 않아서 기본 값으로 설정하고 저장함.");
+				}
+			}			
 
 			GameServer.CreateInstance(config);
 			StartServer();

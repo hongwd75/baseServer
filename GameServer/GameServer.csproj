@@ -20,4 +20,11 @@
       <Folder Include="packets\Client" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="resource\config\invalidnames.txt" />
+      <EmbeddedResource Include="resource\config\invalidnames.txt" />
+      <None Remove="resource\config\logconfig.xml" />
+      <EmbeddedResource Include="resource\config\logconfig.xml" />
+    </ItemGroup>
+
 </Project>

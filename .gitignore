@@ -4,3 +4,7 @@ GameDataBase/obj
 .idea
 StartServer/obj
 GameServer/obj
+GameServer/bin/Debug
+GameBase/bin/Debug
+GameDataBase/bin
+StartServer/bin

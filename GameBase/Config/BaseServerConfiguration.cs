@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using PBase.Config;
 
 
 namespace Project.Config
@@ -13,15 +15,24 @@ namespace Project.Config
 		/// <summary>
 		/// The listening address of the server.
 		/// </summary>
-		[JsonProperty]
 		private IPAddress _ip;
 
+		private string ipInfo;
 		/// <summary>
 		/// The listening port of the server.
 		/// </summary>
-		[JsonProperty]
 		private ushort _port;
 
+		/// <summary>
+		/// The region (external) address of the server.
+		/// </summary>
+		private IPAddress _regionIP;
+
+		/// <summary>
+		/// The region (external) port of the server.
+		/// </summary>
+		private ushort _regionPort;
+		
 		/// <summary>
 		/// Constructs a server configuration with default values.
 		/// </summary>
@@ -29,6 +40,8 @@ namespace Project.Config
 		{
 			_port = 10300;
 			_ip = IPAddress.Any;
+			_regionIP = IPAddress.Any;
+			_regionPort = 10400;			
 		}
 
 		/// <summary>
@@ -50,48 +63,60 @@ namespace Project.Config
 		}
 
 		/// <summary>
-		///  config 파일 읽기
+		/// Loads the configuration values from the given configuration element.
 		/// </summary>
-		/// <param name="filePath"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public static T GetConfigData<T>(FileInfo fileInfo) where T : class
+		/// <param name="root">the root config element</param>
+		protected virtual void LoadFromConfig(ConfigElement root)
 		{
-			if (fileInfo.Exists)
-			{
-				using (StreamReader reader = fileInfo.OpenText())
-				{
-					string jsonString = reader.ReadToEnd();
-					return JsonConvert.DeserializeObject<T>(jsonString);
-				}
-			}
-			else
-			{
-				Console.WriteLine("파일이 존재하지 않습니다.");
-				return null;
-			}
+			string ip = root["Server"]["IP"].GetString("any");
+			_ip = ip == "any" ? IPAddress.Any : IPAddress.Parse(ip);
+			_port = (ushort) root["Server"]["Port"].GetInt(_port);
+
+			ip = root["Server"]["RegionIP"].GetString("any");
+			_regionIP = ip == "any" ? IPAddress.Any : IPAddress.Parse(ip);
+			_regionPort = (ushort) root["Server"]["RegionPort"].GetInt(_regionPort);
+
+			ip = root["Server"]["UdpIP"].GetString("any");
 		}
 
 		/// <summary>
-		///  config 저장
+		/// Load the configuration from an XML source file.
 		/// </summary>
-		/// <param name="filePath"></param>
-		public void SaveJSON(FileInfo configFile)
+		/// <param name="configFile">the file to load from</param>
+		public void LoadFromXMLFile(FileInfo configFile)
 		{
-			if (configFile.Exists)
-				configFile.Delete();
-			
-			string jsonString = JsonConvert.SerializeObject(this);
-			File.WriteAllText(configFile.FullName, jsonString, Encoding.UTF8);
-			Console.WriteLine("JSON 저장 완료: " + jsonString);			
+			if (configFile == null)
+				throw new ArgumentNullException("configFile");
+
+			XMLConfigFile xmlConfig = XMLConfigFile.ParseXMLFile(configFile);
+			LoadFromConfig(xmlConfig);
 		}
 
 		/// <summary>
-		///  config 파일 로드가 완료되고 설정하는 내용들 여기서 정의 
+		/// Saves the values to the given configuration element.
 		/// </summary>
-		public virtual void OnLoadComplete()
+		/// <param name="root">the configuration element to save to</param>
+		protected virtual void SaveToConfig(ConfigElement root)
 		{
-			
+			root["Server"]["Port"].Set(_port);
+			root["Server"]["IP"].Set(_ip);
+			root["Server"]["RegionIP"].Set(_regionIP);
+			root["Server"]["RegionPort"].Set(_regionPort);
 		}
-	}    
+
+		/// <summary>
+		/// Saves the values to the given XML configuration file.
+		/// </summary>
+		/// <param name="configFile">the file to save to</param>
+		public void SaveToXMLFile(FileInfo configFile)
+		{
+			if (configFile == null)
+				throw new ArgumentNullException("configFile");
+
+			var config = new XMLConfigFile();
+			SaveToConfig(config);
+
+			config.Save(configFile);
+		}
+	}
 }

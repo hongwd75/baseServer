@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Reflection;
 using Newtonsoft.Json;
+using PBase.Config;
 using Project.Common;
 using Project.Config;
 using Project.Database.Connection;
@@ -13,23 +14,171 @@ namespace Project.GS
         /// <summary>
         /// The logger name where to log the gm+ commandos
         /// </summary>
-        [JsonProperty]
         protected string m_gmActionsLoggerName;
 
         /// <summary>
         /// The logger name where to log cheat attempts
         /// </summary>
-        [JsonProperty]
         protected string m_cheatLoggerName;
 
         /// <summary>
         /// The file name of the invalid names file
         /// </summary>
-        [JsonProperty] 
         protected string m_invalidNamesFile = "";
         #endregion
         
-        
+		#region Load/Save
+		
+		/// <summary>
+		/// Loads the config values from a specific config element
+		/// </summary>
+		/// <param name="root">the root config element</param>
+		protected override void LoadFromConfig(ConfigElement root)
+		{
+			base.LoadFromConfig(root);
+
+			// Removed to not confuse users
+//			m_rootDirectory = root["Server"]["RootDirectory"].GetString(m_rootDirectory);
+
+			m_logConfigFile = root["Server"]["LogConfigFile"].GetString(m_logConfigFile);
+
+			m_scriptCompilationTarget = root["Server"]["ScriptCompilationTarget"].GetString(m_scriptCompilationTarget);
+			m_scriptAssemblies = root["Server"]["ScriptAssemblies"].GetString(m_scriptAssemblies);
+			m_enableCompilation = root["Server"]["EnableCompilation"].GetBoolean(true);
+			m_autoAccountCreation = root["Server"]["AutoAccountCreation"].GetBoolean(m_autoAccountCreation);
+
+			string serverType = root["Server"]["GameType"].GetString("Normal");
+			switch (serverType.ToLower())
+			{
+				case "normal":
+					m_serverType = eGameServerType.GST_Normal;
+					break;
+				case "test":
+					m_serverType = eGameServerType.GST_Test;
+					break;
+				default:
+					m_serverType = eGameServerType.GST_Normal;
+					break;
+			}
+
+			m_ServerName = root["Server"]["ServerName"].GetString(m_ServerName);
+			m_ServerNameShort = root["Server"]["ServerNameShort"].GetString(m_ServerNameShort);
+
+			m_cheatLoggerName = root["Server"]["CheatLoggerName"].GetString(m_cheatLoggerName);
+			m_gmActionsLoggerName = root["Server"]["GMActionLoggerName"].GetString(m_gmActionsLoggerName);
+			m_invalidNamesFile = root["Server"]["InvalidNamesFile"].GetString(m_invalidNamesFile);
+
+			string db = root["Server"]["DBType"].GetString("XML");
+			switch (db.ToLower())
+			{
+				case "xml":
+					m_dbType = ConnectionType.DATABASE_XML;
+					break;
+				case "mysql":
+					m_dbType = ConnectionType.DATABASE_MYSQL;
+					break;
+				case "sqlite":
+					m_dbType = ConnectionType.DATABASE_SQLITE;
+					break;
+				case "mssql":
+					m_dbType = ConnectionType.DATABASE_MSSQL;
+					break;
+				case "odbc":
+					m_dbType = ConnectionType.DATABASE_ODBC;
+					break;
+				case "oledb":
+					m_dbType = ConnectionType.DATABASE_OLEDB;
+					break;
+				default:
+					m_dbType = ConnectionType.DATABASE_XML;
+					break;
+			}
+			m_dbConnectionString = root["Server"]["DBConnectionString"].GetString(m_dbConnectionString);
+			m_autoSave = root["Server"]["DBAutosave"].GetBoolean(m_autoSave);
+			m_saveInterval = root["Server"]["DBAutosaveInterval"].GetInt(m_saveInterval);
+			m_maxClientCount = root["Server"]["MaxClientCount"].GetInt(m_maxClientCount);
+			m_cpuCount = root["Server"]["CpuCount"].GetInt(m_cpuCount);
+			
+			if (m_cpuCount < 1)
+				m_cpuCount = 1;
+			
+			m_cpuUse = root["Server"]["CpuUse"].GetInt(m_cpuUse);
+			if (m_cpuUse < 1)
+				m_cpuUse = 1; 
+		}
+
+		/// <summary>
+		/// Saves the values into a specific config element
+		/// </summary>
+		/// <param name="root">the root config element</param>
+		protected override void SaveToConfig(ConfigElement root)
+		{
+			base.SaveToConfig(root);
+			root["Server"]["ServerName"].Set(m_ServerName);
+			root["Server"]["ServerNameShort"].Set(m_ServerNameShort);
+			// Removed to not confuse users
+//			root["Server"]["RootDirectory"].Set(m_rootDirectory);
+			root["Server"]["LogConfigFile"].Set(m_logConfigFile);
+
+			root["Server"]["ScriptCompilationTarget"].Set(m_scriptCompilationTarget);
+			root["Server"]["ScriptAssemblies"].Set(m_scriptAssemblies);
+			root["Server"]["EnableCompilation"].Set(m_enableCompilation);
+			root["Server"]["AutoAccountCreation"].Set(m_autoAccountCreation);
+
+			string serverType = "Normal";
+
+			switch (m_serverType)
+			{
+				case eGameServerType.GST_Normal:
+					serverType = "Normal";
+					break;
+				case eGameServerType.GST_Test:
+					serverType = "Test";
+					break;
+				default:
+					serverType = "Normal";
+					break;
+			}
+			root["Server"]["GameType"].Set(serverType);
+
+			root["Server"]["CheatLoggerName"].Set(m_cheatLoggerName);
+			root["Server"]["GMActionLoggerName"].Set(m_gmActionsLoggerName);
+			root["Server"]["InvalidNamesFile"].Set(m_invalidNamesFile);
+
+			string db = "XML";
+			
+			switch (m_dbType)
+			{
+			case ConnectionType.DATABASE_XML:
+				db = "XML";
+					break;
+			case ConnectionType.DATABASE_MYSQL:
+				db = "MYSQL";
+					break;
+			case ConnectionType.DATABASE_SQLITE:
+				db = "SQLITE";
+					break;
+			case ConnectionType.DATABASE_MSSQL:
+				db = "MSSQL";
+					break;
+			case ConnectionType.DATABASE_ODBC:
+				db = "ODBC";
+					break;
+			case ConnectionType.DATABASE_OLEDB:
+				db = "OLEDB";
+					break;
+				default:
+					m_dbType = ConnectionType.DATABASE_XML;
+					break;
+			}
+			root["Server"]["DBType"].Set(db);
+			root["Server"]["DBConnectionString"].Set(m_dbConnectionString);
+			root["Server"]["DBAutosave"].Set(m_autoSave);
+			root["Server"]["DBAutosaveInterval"].Set(m_saveInterval);
+			root["Server"]["CpuUse"].Set(m_cpuUse);
+		}
+		#endregion
+		
         // 필요한 내용을 채워넣으세요.
         public GameServerConfiguration() : base()
         {
@@ -132,69 +281,57 @@ namespace Project.GS
         /// <summary>
         /// holds the server root directory
         /// </summary>
-        [JsonProperty]
         protected string m_rootDirectory;
 
         /// <summary>
         /// Holds the log configuration file path
         /// </summary>
-        [JsonProperty]
         protected string m_logConfigFile;
 
         /// <summary>
         /// Name of the scripts compilation target
         /// </summary>
-        [JsonProperty]
         protected string m_scriptCompilationTarget;
 
         /// <summary>
         /// The assemblies to include when compiling the scripts
         /// </summary>
-        [JsonProperty]
         protected string m_scriptAssemblies;
 		
         /// <summary>
         /// Enable/Disable Startup Script Compilation
         /// </summary>
-        [JsonProperty]
         protected bool m_enableCompilation;
 
         /// <summary>
         /// True if the server shall automatically create accounts
         /// </summary>
-        [JsonProperty]
         protected bool m_autoAccountCreation;
 
         /// <summary>
         /// The game server type
         /// </summary>
-        [JsonProperty]
         protected eGameServerType m_serverType;
 
         /// <summary>
         /// The game server name
         /// </summary>
-        [JsonProperty]
         protected string m_ServerName;
 
         /// <summary>
         /// The short server name, shown in /loc command
         /// </summary>
-        [JsonProperty]
         protected string m_ServerNameShort;
 
         /// <summary>
         /// The count of server cpu
         /// </summary>
-        [JsonProperty]
         protected int m_cpuCount = 1;
-        [JsonProperty]
         private int m_cpuUse = 1;
        
         /// <summary>
         /// The max client count.
         /// </summary>
-        [JsonProperty]
         protected int m_maxClientCount = 1000;
         #endregion
         
@@ -203,33 +340,29 @@ namespace Project.GS
         /// <summary>
         /// The path to the XML database folder
         /// </summary>
-        [JsonProperty]
         protected string m_dbConnectionString;
 
         /// <summary>
         /// Type database type
         /// </summary>
-        [JsonProperty]
         protected ConnectionType m_dbType;
 
         /// <summary>
         /// True if the server shall autosave the db
         /// </summary>
-        [JsonProperty]
         protected bool m_autoSave;
 
         /// <summary>
         /// The auto save interval in minutes
         /// </summary>
-        [JsonProperty]
         protected int m_saveInterval;
 
-        #endregion      
-        
+        #endregion
+
         /// <summary>
         /// Gets or sets the script assemblies to be included in the script compilation
-        /// </summary>        
-        public string[] AdditionalScriptAssemblies => string.IsNullOrEmpty(m_scriptAssemblies.Trim()) ? Array.Empty<string>() : m_scriptAssemblies.Split(',');
+        /// </summary>
+        public string[] AdditionalScriptAssemblies => string.IsNullOrEmpty(m_scriptAssemblies?.Trim()) ? Array.Empty<string>() : m_scriptAssemblies.Split(',');
         
         /// <summary>
         /// Gets or sets the root directory of the server
@@ -253,17 +386,6 @@ namespace Project.GS
                     return Path.Combine(m_rootDirectory, m_logConfigFile);
             }
             set { m_logConfigFile = value; }
-        }
-        
-        /// <summary>
-        ///  config파일에 정의된 데이터로 서버 설정
-        /// </summary>
-        public override void OnLoadComplete()
-        {
-            if (m_cpuCount < 1)
-                m_cpuCount = 1;	
-            if (m_cpuUse < 1)
-                m_cpuUse = 1;             
         }
         
         /// <summary>
